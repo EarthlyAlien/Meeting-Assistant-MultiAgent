@@ -1,6 +1,6 @@
 """Action item extraction agent for identifying tasks and assignments."""
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 
 class ActionItemExtractionAgent:
@@ -14,11 +14,7 @@ class ActionItemExtractionAgent:
         """
         self.config = config
 
-    def extract_action_items(
-        self,
-        transcript: str,
-        summary: str
-    ) -> Dict[str, Any]:
+    def extract_action_items(self, transcript: str, summary: str) -> Dict[str, Any]:
         """Extract action items from meeting content.
 
         Args:
@@ -34,12 +30,12 @@ class ActionItemExtractionAgent:
                 {
                     "task": "Create project timeline",
                     "assignee": "John",
-                    "due_date": "2024-03-15"
+                    "due_date": "2024-03-15",
                 },
                 {
                     "task": "Review requirements document",
                     "assignee": "Sarah",
-                    "due_date": "2024-03-10"
-                }
+                    "due_date": "2024-03-10",
+                },
             ]
         }

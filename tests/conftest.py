@@ -1,6 +1,6 @@
 import os
-import tempfile
 import shutil
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -42,9 +42,7 @@ def test_config():
     )
 
     autogen_config = AutoGenConfig(
-        use_docker=False,
-        max_consecutive_auto_reply=5,
-        human_input_mode="NEVER"
+        use_docker=False, max_consecutive_auto_reply=5, human_input_mode="NEVER"
     )
 
     return AppConfig(
@@ -85,7 +83,7 @@ def mock_config():
         "output_dir": "test_output",
         "temp_dir": "test_temp",
         "use_docker": False,
-        "timeout": 300
+        "timeout": 300,
     }
 
 
@@ -106,15 +104,8 @@ def sample_results():
         "summary": "Sample meeting summary",
         "action_items": {
             "action_items": [
-                {
-                    "task": "Test task",
-                    "assignee": "John",
-                    "due_date": "2024-03-15"
-                }
+                {"task": "Test task", "assignee": "John", "due_date": "2024-03-15"}
             ]
         },
-        "metadata": {
-            "audio_file": "test.wav",
-            "timestamp": "2024-03-01 12:00:00"
-        }
+        "metadata": {"audio_file": "test.wav", "timestamp": "2024-03-01 12:00:00"},
     }

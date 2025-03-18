@@ -1,9 +1,10 @@
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
 
 from .action_item_extraction_agent import ActionItemExtractionAgent
+from .config import AppConfig
 from .summarization_agent import SummarizationAgent
 from .transcription_agent import TranscriptionAgent
 
@@ -11,11 +12,11 @@ from .transcription_agent import TranscriptionAgent
 class MeetingAssistantOrchestrator:
     """Orchestrates the multi-agent system for processing meetings."""
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(self, config: AppConfig) -> None:
         """Initialize the orchestrator with configuration.
 
         Args:
-            config: Configuration dictionary for the orchestrator and agents.
+            config: Configuration object for the orchestrator and agents.
         """
         self.config = config
         self._setup_agents()
@@ -29,8 +30,8 @@ class MeetingAssistantOrchestrator:
 
     def _setup_workspace(self) -> None:
         """Set up the workspace directories."""
-        self.output_dir = Path(self.config.get("output_dir", "output"))
-        self.temp_dir = Path(self.config.get("temp_dir", "temp"))
+        self.output_dir = self.config.workspace.results_dir
+        self.temp_dir = self.config.workspace.temp_dir
 
         # Create directories if they don't exist
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -50,25 +51,18 @@ class MeetingAssistantOrchestrator:
             ValueError: If the audio file is invalid or processing fails.
         """
         if not Path(audio_file).exists():
-            raise FileNotFoundError(
-                f"Audio file not found: {audio_file}"
-            )
+            raise FileNotFoundError(f"Audio file not found: {audio_file}")
 
         try:
             # Step 1: Transcribe the meeting audio
-            transcription_result = self.transcription_agent.transcribe(
-                audio_file
-            )
+            transcription_result = self.transcription_agent.transcribe(audio_file)
 
             # Step 2: Generate meeting summary
-            summary_result = self.summarization_agent.summarize(
-                transcription_result
-            )
+            summary_result = self.summarization_agent.summarize(transcription_result)
 
             # Step 3: Extract action items
             action_items = self.action_item_agent.extract_action_items(
-                transcription_result,
-                summary_result
+                transcription_result, summary_result
             )
 
             # Combine all results
@@ -78,14 +72,12 @@ class MeetingAssistantOrchestrator:
                 "action_items": action_items,
                 "metadata": {
                     "audio_file": audio_file,
-                    "timestamp": str(datetime.now())
-                }
+                    "timestamp": str(datetime.now()),
+                },
             }
 
         except Exception as e:
-            raise ValueError(
-                f"Failed to process meeting: {str(e)}"
-            ) from e
+            raise ValueError(f"Failed to process meeting: {str(e)}") from e
 
     def generate_report(self, results: Dict[str, Any]) -> str:
         """Generate a formatted report from the meeting results.
@@ -101,9 +93,7 @@ class MeetingAssistantOrchestrator:
         """
         required_fields = {"transcription", "summary", "action_items"}
         if not all(field in results for field in required_fields):
-            raise ValueError(
-                "Missing required fields in results data"
-            )
+            raise ValueError("Missing required fields in results data")
 
         report = []
         report.append("# Meeting Summary Report\n")
@@ -120,11 +110,7 @@ class MeetingAssistantOrchestrator:
 
         return "\n".join(report)
 
-    def save_results(
-        self,
-        results: Dict[str, Any],
-        output_path: str = None
-    ) -> str:
+    def save_results(self, results: Dict[str, Any], output_path: str = None) -> str:
         """Save the meeting results to files.
 
         Args:
@@ -141,10 +127,7 @@ class MeetingAssistantOrchestrator:
             raise ValueError("Results must be a dictionary")
 
         # Use custom output path or default to output directory
-        output_dir = (
-            Path(output_path) if output_path
-            else self.output_dir
-        )
+        output_dir = Path(output_path) if output_path else self.output_dir
         output_dir.mkdir(parents=True, exist_ok=True)
 
         # Generate timestamp for filenames
