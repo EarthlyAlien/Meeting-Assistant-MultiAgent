@@ -10,7 +10,7 @@ SpeechRecognition
 openai==1.12.0
 fastapi==0.110.0
 uvicorn==0.27.1
-python-multipart==0.0.9
+python-multipart==0.0.18
 jinja2
 pytest==8.0.2
 pytest-cov==4.1.0
@@ -18,7 +18,7 @@ python-dotenv==1.0.1
 aiofiles
 pydantic==2.6.3
 azure-cognitiveservices-speech==1.35.0
-black==24.2.0
+black==24.3.0
 flake8==7.0.0
 isort==5.13.2
 httpx==0.27.0
