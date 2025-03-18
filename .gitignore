@@ -31,15 +31,15 @@ ENV/
 *.swp
 *.swo
 
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
 # Project specific
-*.wav
-*.mp3
-*.m4a
-*.ogg
+workspace/
 meeting_results.json
-meeting_report.md
-sample_results.json
-sample_report.md
 
 # Environment variables
 .env
