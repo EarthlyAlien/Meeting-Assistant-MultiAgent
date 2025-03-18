@@ -24,12 +24,14 @@ wheels/
 venv/
 env/
 ENV/
+.env
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
+.DS_Store
 
 # Testing
 .coverage
@@ -37,14 +39,50 @@ htmlcov/
 .pytest_cache/
 .tox/
 
-# Project specific
-workspace/
-meeting_results.json
-
-# Environment variables
-.env
-.env.local
-
 # Logs
 *.log
-logs/ 
+logs/
+
+# Local development
+local_settings.py
+db.sqlite3
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Project specific
+output/
+transcripts/
+summaries/
+action_items/
+meeting_recordings/
+
+# API keys and secrets
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Documentation
+/site
+docs/_build/
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg 
