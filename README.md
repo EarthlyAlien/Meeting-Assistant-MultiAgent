@@ -1,6 +1,10 @@
-# Intelligent Meeting Assistant
+# Meeting Assistant - Multi-Agent System
 
-A multi-agent system built with Microsoft AutoGen 0.4 for processing meeting recordings. The system transcribes audio, summarizes content, and extracts action items from meetings.
+A sophisticated multi-agent system built with Microsoft AutoGen 0.4 for processing meeting recordings. The system transcribes audio, summarizes content, and extracts action items from meetings using specialized agents.
+
+## Author
+
+**Chaitanya K.K. Vankadaru**
 
 ## Features
 
@@ -8,98 +12,116 @@ A multi-agent system built with Microsoft AutoGen 0.4 for processing meeting rec
 - **Meeting Summarization**: Generates concise summaries using OpenAI GPT models
 - **Action Item Extraction**: Identifies tasks, assignees, and deadlines from meeting discussions
 - **Agent Coordination**: Uses Microsoft AutoGen 0.4 for agent communication and orchestration
-- **Modern Web Interface**: Clean, responsive UI with drag-and-drop file upload
-- **Docker Support**: Easy deployment with Docker and docker-compose
+- **Robust Error Handling**: Comprehensive error handling and logging
+- **Configurable**: Flexible configuration management using Pydantic
+- **Well-Tested**: Extensive test coverage with pytest
+- **CI/CD Ready**: GitHub Actions workflow for testing, linting, and security checks
 
-## Quick Start with Docker
+## Installation
 
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd intelligent-meeting-assistant
-   ```
+### Prerequisites
 
-2. Create a `.env` file with your API keys:
-   ```bash
-   OPENAI_API_KEY=your_openai_api_key
-   AZURE_SPEECH_KEY=your_azure_speech_key
-   ```
+- Python 3.9 or higher
+- FFmpeg (for audio processing)
+- OpenAI API key
+- Azure Speech Services key
 
-3. Start the application with Docker Compose:
-   ```bash
-   docker-compose up --build
-   ```
+### Using pip
 
-4. Visit `http://localhost:8000` in your browser
+```bash
+# Clone the repository
+git clone https://github.com/EarthlyAlien/Meeting-Assistant-MultiAgent.git
+cd Meeting-Assistant-MultiAgent
 
-## Manual Installation
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-1. Ensure you have Python 3.8+ and ffmpeg installed
+# Install dependencies
+pip install -r requirements.txt
+```
 
-2. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd intelligent-meeting-assistant
-   ```
+### Using Docker
 
-3. Create and activate a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+```bash
+# Build and run with Docker Compose
+docker-compose up --build
+```
 
-4. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+## Configuration
 
-5. Set up environment variables:
-   ```bash
-   export OPENAI_API_KEY=your_openai_api_key
-   export AZURE_SPEECH_KEY=your_azure_speech_key
-   ```
+Create a `.env` file in the project root:
 
-6. Run the application:
-   ```bash
-   uvicorn app:app --reload
-   ```
+```env
+OPENAI_API_KEY=your_openai_api_key
+AZURE_SPEECH_KEY=your_azure_speech_key
+MODEL_NAME=gpt-4  # Optional, defaults to gpt-4
+TEMPERATURE=0.7   # Optional, defaults to 0.7
+MAX_TOKENS=1000   # Optional, defaults to 1000
+DEBUG=false       # Optional, defaults to false
+LOG_LEVEL=INFO    # Optional, defaults to INFO
+```
+
+## Usage
+
+### Basic Usage
+
+```python
+from meeting_assistant import MeetingAssistantOrchestrator
+
+# Initialize the orchestrator
+orchestrator = MeetingAssistantOrchestrator()
+
+# Process a meeting recording
+results = orchestrator.process_meeting("path/to/meeting.wav")
+
+# Generate a report
+report = orchestrator.generate_report(results)
+
+# Save results
+orchestrator.save_results(results, "meeting_results.json")
+```
+
+### Directory Structure
+
+```
+meeting_assistant/
+├── __init__.py
+├── config.py           # Configuration management
+├── logger.py          # Logging setup
+├── orchestrator.py    # Main orchestrator
+├── transcription_agent.py
+├── summarization_agent.py
+└── action_item_extraction_agent.py
+
+tests/
+├── __init__.py
+├── conftest.py        # Test configuration
+└── test_orchestrator.py
+
+logs/                  # Log files
+results/              # Processing results
+uploads/              # Uploaded audio files
+```
 
 ## Development
-
-### Project Structure
-
-```
-intelligent-meeting-assistant/
-├── app.py                 # FastAPI web application
-├── orchestrator.py        # Main orchestrator for agent coordination
-├── transcription_agent.py # Audio transcription agent
-├── summarization_agent.py # Text summarization agent
-├── action_item_extraction_agent.py # Action item extraction agent
-├── static/               # Static assets
-│   ├── css/             # Stylesheets
-│   └── js/              # JavaScript files
-├── templates/           # HTML templates
-├── tests/              # Test files
-├── uploads/            # Temporary file storage
-└── docker-compose.yml  # Docker Compose configuration
-```
 
 ### Running Tests
 
 ```bash
 # Install test dependencies
-pip install pytest pytest-cov
+pip install -r requirements.txt
 
 # Run tests with coverage
 pytest --cov=./ --cov-report=term-missing
+
+# Run specific test file
+pytest tests/test_orchestrator.py -v
 ```
 
 ### Code Quality
 
 ```bash
-# Install development dependencies
-pip install black flake8 isort
-
 # Format code
 black .
 isort .
@@ -108,23 +130,39 @@ isort .
 flake8 .
 ```
 
-## API Documentation
+### Security Checks
 
-Once the application is running, visit:
-- Swagger UI: `http://localhost:8000/docs`
-- ReDoc: `http://localhost:8000/redoc`
+```bash
+# Install security tools
+pip install bandit safety
+
+# Run security checks
+bandit -r .
+safety check
+```
+
+## CI/CD Pipeline
+
+The project includes a comprehensive GitHub Actions workflow that:
+
+1. Tests the code on multiple Python versions (3.9-3.12)
+2. Checks code formatting (black, isort)
+3. Runs linting (flake8)
+4. Performs security checks (bandit, safety)
+5. Builds and publishes Docker images
+6. Reports test coverage
 
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature-name`
-3. Commit changes: `git commit -am 'Add feature'`
+3. Make your changes and commit: `git commit -am 'Add feature'`
 4. Push to the branch: `git push origin feature-name`
 5. Submit a pull request
 
 ## License
 
-[MIT License](LICENSE)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 

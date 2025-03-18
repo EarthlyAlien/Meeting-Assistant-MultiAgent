@@ -24,27 +24,65 @@ wheels/
 venv/
 env/
 ENV/
+.env
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
+.DS_Store
 
-# Project specific
-*.wav
-*.mp3
-*.m4a
-*.ogg
-meeting_results.json
-meeting_report.md
-sample_results.json
-sample_report.md
-
-# Environment variables
-.env
-.env.local
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
 
 # Logs
 *.log
-logs/ 
+logs/
+
+# Local development
+local_settings.py
+db.sqlite3
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Project specific
+output/
+transcripts/
+summaries/
+action_items/
+meeting_recordings/
+
+# API keys and secrets
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Documentation
+/site
+docs/_build/
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg 
