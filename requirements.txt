@@ -1,0 +1,16 @@
+magentic-one-cli
+autogenstudio
+autogen-agentchat
+autogen-ext[openai]
+pyautogen
+numpy
+pydub
+SpeechRecognition
+openai
+fastapi
+uvicorn
+python-multipart
+jinja2
+pytest
+python-dotenv
+aiofiles 

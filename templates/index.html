@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-microphone-alt"></i> Meeting Assistant</h1>
+            <p>Upload your meeting recording and get transcription, summary, and action items</p>
+        </header>
+
+        <main>
+            <section class="upload-section">
+                <form id="uploadForm" class="upload-form">
+                    <div class="file-upload">
+                        <label for="audioFile">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Choose audio file or drag it here</span>
+                        </label>
+                        <input type="file" id="audioFile" name="file" accept="audio/*" required>
+                    </div>
+
+                    <div class="api-keys">
+                        <div class="input-group">
+                            <label for="openaiKey">OpenAI API Key (optional):</label>
+                            <input type="password" id="openaiKey" name="openai_api_key" placeholder="sk-...">
+                        </div>
+                        <div class="input-group">
+                            <label for="azureKey">Azure Speech Key (optional):</label>
+                            <input type="password" id="azureKey" name="azure_speech_key" placeholder="Enter Azure key">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-cogs"></i> Process Meeting
+                    </button>
+                </form>
+            </section>
+
+            <section class="results-section" style="display: none;">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="summary">Summary</button>
+                    <button class="tab-btn" data-tab="action-items">Action Items</button>
+                    <button class="tab-btn" data-tab="transcription">Transcription</button>
+                </div>
+
+                <div class="tab-content">
+                    <div id="summary" class="tab-pane active">
+                        <h2>Meeting Summary</h2>
+                        <div id="summaryContent" class="content"></div>
+                    </div>
+
+                    <div id="action-items" class="tab-pane">
+                        <h2>Action Items</h2>
+                        <div id="actionItemsContent" class="content"></div>
+                    </div>
+
+                    <div id="transcription" class="tab-pane">
+                        <h2>Full Transcription</h2>
+                        <div id="transcriptionContent" class="content"></div>
+                    </div>
+                </div>
+            </section>
+
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Processing your meeting recording...</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', path='/js/script.js') }}"></script>
+</body>
+</html> 
