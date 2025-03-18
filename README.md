@@ -21,7 +21,7 @@ A sophisticated multi-agent system built with Microsoft AutoGen 0.4 for processi
 
 ### Prerequisites
 
-- Python 3.9 or higher
+- Python 3.12
 - FFmpeg (for audio processing)
 - OpenAI API key
 - Azure Speech Services key
