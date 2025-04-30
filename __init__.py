@@ -1,1 +1,1 @@
-"""Meeting Assistant Multi-Agent System""" 
+"""Meeting Assistant Multi-Agent System"""

@@ -1,19 +1,26 @@
-import os
 import json
-from typing import Optional
-from fastapi import FastAPI, File, UploadFile, Form, Request
+import os
+from pathlib import Path
+from typing import Any, Dict, Optional
+
+import uvicorn
+from dotenv import load_dotenv
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from pathlib import Path
-import uvicorn
-from dotenv import load_dotenv
 from orchestrator import MeetingAssistantOrchestrator
+
+from meeting_assistant.config import load_config
 
 # Load environment variables
 load_dotenv()
 
-app = FastAPI(title="Meeting Assistant")
+app = FastAPI(
+    title="Meeting Assistant API",
+    description="API for processing meeting recordings using multi-agent system",
+    version="1.0.0",
+)
 
 # Create directories for static files and templates
 BASE_DIR = Path(__file__).resolve().parent
@@ -32,71 +39,67 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 # Setup templates
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
+# Initialize the orchestrator
+config = load_config()
+orchestrator = MeetingAssistantOrchestrator(config)
+
+
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     """Render the home page"""
-    return templates.TemplateResponse(
-        "index.html",
-        {"request": request}
-    )
+    return templates.TemplateResponse("index.html", {"request": request})
 
-@app.post("/process")
-async def process_meeting(
-    file: UploadFile = File(...),
-    openai_api_key: Optional[str] = Form(None),
-    azure_speech_key: Optional[str] = Form(None)
-):
-    """Process a meeting recording"""
+
+@app.post("/process-meeting")
+async def process_meeting(audio_file: UploadFile = File(...)) -> Dict[str, Any]:
+    """Process a meeting recording.
+
+    Args:
+        audio_file: The uploaded meeting audio file.
+
+    Returns:
+        Dict containing the processing results.
+
+    Raises:
+        HTTPException: If file upload or processing fails.
+    """
     try:
-        # Save the uploaded file
-        file_path = UPLOAD_DIR / file.filename
-        with open(file_path, "wb") as buffer:
-            content = await file.read()
-            buffer.write(content)
-        
-        # Configure the orchestrator
-        config = {
-            "openai_api_key": openai_api_key or os.getenv("OPENAI_API_KEY"),
-            "azure_speech_key": azure_speech_key or os.getenv("AZURE_SPEECH_KEY")
-        }
-        
+        # Save uploaded file
+        temp_path = f"temp/{audio_file.filename}"
+        with open(temp_path, "wb") as f:
+            content = await audio_file.read()
+            f.write(content)
+
         # Process the meeting
-        orchestrator = MeetingAssistantOrchestrator(config)
-        results = orchestrator.process_meeting(str(file_path))
-        
-        # Generate report
-        report = orchestrator.generate_report(results)
-        
-        # Save results and report with unique names based on timestamp
-        results_file = UPLOAD_DIR / f"results_{file.filename}.json"
-        report_file = UPLOAD_DIR / f"report_{file.filename}.md"
-        
-        with open(results_file, "w") as f:
-            json.dump(results, f, indent=2)
-        
-        with open(report_file, "w") as f:
-            f.write(report)
-        
-        # Clean up the uploaded audio file
-        os.remove(file_path)
-        
-        return JSONResponse({
-            "status": "success",
-            "message": "Meeting processed successfully",
-            "results": results,
-            "report": report
-        })
-        
+        results = orchestrator.process_meeting(temp_path)
+
+        # Clean up
+        os.remove(temp_path)
+
+        return results
+
     except Exception as e:
-        return JSONResponse({
-            "status": "error",
-            "message": str(e)
-        }, status_code=500)
+        raise HTTPException(
+            status_code=500, detail=f"Failed to process meeting: {str(e)}"
+        )
+
 
 @app.get("/health")
-async def health_check():
-    """Health check endpoint"""
+async def health_check() -> Dict[str, str]:
+    """Check the health of the API.
+
+    Returns:
+        Dict containing status information.
+    """
     return {"status": "healthy"}
 
+
 if __name__ == "__main__":
-    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True) 
+    # Use environment variable for host in production, default to localhost
+    host = os.getenv("API_HOST", "127.0.0.1")
+    port = int(os.getenv("API_PORT", "8000"))
+
+    # Enable reload only in development
+    reload = os.getenv("API_ENV", "development").lower() == "development"
+
+    uvicorn.run("app:app", host=host, port=port, reload=reload)
